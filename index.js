@@ -1,7 +1,7 @@
 const LinkCheckRepository = require("./Repository/LinkCheckRepository");
 const blc = require("broken-link-checker");
 
-let linkCheckRepository = new LinkCheckRepository('list-test.csv');
+let linkCheckRepository = new LinkCheckRepository('list.csv');
 
 let linkChecks = [];
 linkCheckRepository.findAll().then(links => {
