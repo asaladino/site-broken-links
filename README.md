@@ -1,4 +1,4 @@
-# Broken Link Search
+# Site Broken Links
 
 Checks a site for broken links.
 
