@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const HtmlUrlChecker = require("broken-link-checker").HtmlUrlChecker;
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
