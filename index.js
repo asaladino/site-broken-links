@@ -1,4 +1,4 @@
-const LinkCheckRepository = require("./Repository/LinkCheckRepository");
+const LinkCheckRepository = require("./src/Repository/LinkCheckRepository");
 const blc = require("broken-link-checker");
 
 let linkCheckRepository = new LinkCheckRepository('list.csv');
