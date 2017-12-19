@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "broken-link-checker": "^0.7.6",
+    "command-line-args": "^4.0.7",
+    "command-line-usage": "^4.0.2",
     "fs": "0.0.1-security"
   }
 }

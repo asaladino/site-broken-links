@@ -1,25 +1,38 @@
-const LinkCheckRepository = require("./src/Repository/LinkCheckRepository");
-const blc = require("broken-link-checker");
+const HtmlUrlChecker = require("broken-link-checker").HtmlUrlChecker;
+const commandLineArgs = require('command-line-args');
+const getUsage = require('command-line-usage');
 
-let linkCheckRepository = new LinkCheckRepository('list.csv');
+const UrlsRepository = require('./src/Repository/UrlsRepository');
+const OptionsRepository = require('./src/Repository/OptionsRepository');
 
-let linkChecks = [];
-linkCheckRepository.findAll().then(links => {
-    linkChecks = links;
-    links.forEach(linkCheck => {
-        htmlUrlChecker.enqueue(linkCheck.url, linkCheck);
-    });
-});
+const menu = require('./src/Model/Menu');
+const Args = require('./src/Model/Args');
 
-let htmlUrlChecker = new blc.HtmlUrlChecker({}, {
-    'link': function (result, customData) {
-        if (result.broken) {
-            console.log(result.base.original + " => " + result.url.original);
-            customData.addBroken(result.url.original);
+let args = new Args(commandLineArgs(menu[1]['optionList']));
+
+if (args.shouldShowHelp()) {
+    console.log(getUsage(menu));
+} else {
+    // Load the option.
+    let optionsRepository = new OptionsRepository(args);
+    let option = optionsRepository.getOption();
+
+    // Load the urls to test.
+    let urlsRepository = new UrlsRepository(option, args);
+    let urls = urlsRepository.findForRange();
+
+    let htmlUrlChecker = new HtmlUrlChecker({}, {
+        'link': (result, /** @var {Url} */url) => {
+            console.log("checked: " + result.base.original + " => " + result.url.original);
+            if(result.broken) {
+                console.log(result.base.original + " => " + result.url.original);
+                url.addBroken(result.url.original);
+            }
+        },
+        'end': () => {
+            console.log("Saved to file...");
         }
-    },
-    'end': function () {
-        console.log("Saving");
-        linkCheckRepository.write(linkChecks);
-    }
-});
+    });
+
+    urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
+}
