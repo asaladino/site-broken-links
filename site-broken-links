@@ -9,6 +9,7 @@ const OptionsRepository = require('./src/Repository/OptionsRepository');
 
 const menu = require('./src/Model/Menu');
 const Args = require('./src/Model/Args');
+const Url = require('./src/Model/Url');
 
 let args = new Args(commandLineArgs(menu[1]['optionList']));
 
@@ -24,7 +25,7 @@ if (args.shouldShowHelp()) {
     let urls = urlsRepository.findForRange();
 
     let htmlUrlChecker = new HtmlUrlChecker({}, {
-        'link': (result, /** @var {Url} */url) => {
+        'link': (result, /** @type {Url} */url) => {
             console.log("checked: " + result.base.original + " => " + result.url.original);
             if(result.broken) {
                 console.log(result.base.original + " => " + result.url.original);
