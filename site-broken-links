@@ -6,6 +6,7 @@ const getUsage = require('command-line-usage');
 
 const UrlsRepository = require('./src/Repository/UrlsRepository');
 const OptionsRepository = require('./src/Repository/OptionsRepository');
+const BrokenLinksRepository = require('./src/Repository/BrokenLinksRepository');
 
 const menu = require('./src/Model/Menu');
 const Args = require('./src/Model/Args');
@@ -24,16 +25,19 @@ if (args.shouldShowHelp()) {
     let urlsRepository = new UrlsRepository(option, args);
     let urls = urlsRepository.findForRange();
 
+    let brokenLinksRepository = new BrokenLinksRepository(option, args);
+
     let htmlUrlChecker = new HtmlUrlChecker({}, {
         'link': (result, /** @type {Url} */url) => {
-            console.log("checked: " + result.base.original + " => " + result.url.original);
             if(result.broken) {
                 console.log(result.base.original + " => " + result.url.original);
                 url.addBroken(result.url.original);
             }
         },
         'end': () => {
-            console.log("Saved to file...");
+            console.log('Saving found broken links.');
+            urls.forEach(url => brokenLinksRepository.save(url));
+            console.log('Done.');
         }
     });
 
