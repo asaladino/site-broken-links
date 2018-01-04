@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const HtmlUrlChecker = require("broken-link-checker").HtmlUrlChecker;
+const {HtmlUrlChecker} = require('broken-link-checker');
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
 
@@ -27,19 +27,23 @@ if (args.shouldShowHelp()) {
 
     let brokenLinksRepository = new BrokenLinksRepository(option, args);
 
-    let htmlUrlChecker = new HtmlUrlChecker({}, {
-        'link': (result, /** @type {Url} */url) => {
-            if(result.broken) {
-                console.log(result.base.original + " => " + result.url.original);
+    const htmlUrlChecker = new HtmlUrlChecker({})
+        .on('link', (result, /** @type {Url} */url) => {
+            if (result.broken) {
+                console.log(url.url + " => " + result.url.original);
                 url.addBroken(result.url.original);
             }
-        },
-        'end': () => {
+        })
+        .on('page', (error, pageUrl, url) => {
+            console.log("checking: " + url.url);
+        })
+        .on('complete', () => {
             console.log('Saving found broken links.');
             urls.forEach(url => brokenLinksRepository.save(url));
             console.log('Done.');
-        }
-    });
+        });
 
-    urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
+    urls.forEach(url => {
+        htmlUrlChecker.enqueue(url.url, url);
+    });
 }

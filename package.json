@@ -1,15 +1,15 @@
 {
-  "name": "broken-links",
+  "name": "site-broken-links",
   "version": "1.0.0",
-  "description": "Find broken links on rivier",
+  "description": "Find broken links on a site.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Adam Saladino<adam@codingsimply.com>",
+  "license": "MIT",
   "dependencies": {
-    "broken-link-checker": "^0.7.6",
+    "broken-link-checker": "stevenvachon/broken-link-checker#v0.8.0",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
     "fs": "0.0.1-security"
