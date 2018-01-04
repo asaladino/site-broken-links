@@ -9,6 +9,7 @@
   "author": "Adam Saladino<adam@codingsimply.com>",
   "license": "MIT",
   "dependencies": {
+    "ascii-progress": "^1.0.5",
     "broken-link-checker": "stevenvachon/broken-link-checker#v0.8.0",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
