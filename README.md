@@ -1,12 +1,27 @@
 # Site Broken Links
 
-Checks a site for broken links.
+Checks a site for broken links. Should be used with [site-index](https://github.com/asaladino/site-index).
 
-`npm install`
+To start the broken link checking, run:
 
-Then create a `list.csv` file that will have a url on each line.
+```
+./site-index --domain "codingsimply.com" --verbose --html --type crawl --output "/some/reports"
+./site-broken-links --domain "codingsimply.com" --verbose --output "/some/reports"
+```
 
-`node index.js`
+Domain and output folder are required parameters. To see a list of parameters, run
 
-Will start looking for broken links and output them to the broken folder.
+```
+./site-content --help
 
+Site Broken Links
+
+  Check a site for broken links.
+
+Options
+
+  --domain www.domain.com   (Required) Domain to run broken links reports on.
+  --output file             (Required) Folder to output the reports to.
+  --verbose                 Output information on the reporting. 
+  --help                    Print this usage guide.
+```

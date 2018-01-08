@@ -2,7 +2,7 @@
   "name": "site-broken-links",
   "version": "1.0.0",
   "description": "Find broken links on a site.",
-  "main": "index.js",
+  "main": "site-broken-links",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
