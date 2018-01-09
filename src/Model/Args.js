@@ -3,13 +3,20 @@ const FileDetails = require('./FileDetails');
 class Args {
     constructor(params) {
         /**
-         * @type FileDetails
+         * Project directory to output the index results.
+         * @type {FileDetails|null}
          */
         this.output = null;
         /**
-         * @type {string}
+         * Domain being indexed.
+         * @type {string|*}
          */
         this.domain = null;
+        /**
+         * Should progress information be output to the console?
+         * @type {boolean}
+         */
+        this.verbose = true;
         Object.assign(this, params);
     }
 

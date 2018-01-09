@@ -1,50 +1,30 @@
 #!/usr/bin/env node
 
-const {HtmlUrlChecker} = require('broken-link-checker');
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
 
-const UrlsRepository = require('./src/Repository/UrlsRepository');
-const OptionsRepository = require('./src/Repository/OptionsRepository');
-const BrokenLinksRepository = require('./src/Repository/BrokenLinksRepository');
-const ProgressUtility = require('./src/Utility/ProgressUtility');
-
 const menu = require('./src/Model/Menu');
 const Args = require('./src/Model/Args');
-const Url = require('./src/Model/Url');
+
+const ProgressUtility = require('./src/Utility/ProgressUtility');
+const BrokenLinksService = require('./src/Service/BrokenLinksService');
 
 let args = new Args(commandLineArgs(menu[1]['optionList']));
 
 if (args.shouldShowHelp()) {
     console.log(getUsage(menu));
 } else {
-    // Load the option.
-    let optionsRepository = new OptionsRepository(args);
-    let option = optionsRepository.getOption();
-
-    // Load the urls to test.
-    let urlsRepository = new UrlsRepository(option, args);
-    let urls = urlsRepository.findForRange();
-
-    let brokenLinksRepository = new BrokenLinksRepository(option, args);
-    let bar = ProgressUtility.build(urls.length);
-    console.log('\nStarting Broken Link Test');
-
-    const htmlUrlChecker = new HtmlUrlChecker({})
-        .on('link', (result, /** @type {Url} */url) => {
-            if (result.broken) {
-                bar.tick(0, {'message': url.url + " => " + result.url.original});
-                url.addBroken(result.url.original);
-            }
-        })
-        .on('page', (error, pageUrl, url) => {
-            bar.tick(1, {'message': url.name});
-        })
-        .on('end', () => {
-            bar.tick(0, {'message': 'Saving found broken links.'});
-            urls.forEach(url => brokenLinksRepository.save(url));
-            bar.tick(0, {'message': 'Done'});
-        });
-
-    urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
+    let brokenLinksService = new BrokenLinksService(args);
+    let bar;
+    console.log('\nStarting Broken Links');
+    brokenLinksService.on('start', urls => {
+        if (args.verbose) {
+            bar = ProgressUtility.build(urls.length);
+        }
+    }).on('progress', url => {
+        if (args.verbose) {
+            bar.tick(1, {message: 'checking: ' + url.url});
+        }
+    }).on('complete', () => console.log('Done'));
+    brokenLinksService.start();
 }
