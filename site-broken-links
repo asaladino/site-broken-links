@@ -14,6 +14,7 @@ let args = new Args(commandLineArgs(menu[1]['optionList']));
 if (args.shouldShowHelp()) {
     console.log(getUsage(menu));
 } else {
+    args.output.doesFolderExist();
     let brokenLinksService = new BrokenLinksService(args);
     let bar;
     console.log('\nStarting Broken Links');

@@ -1,19 +1,25 @@
 const fs = require('fs');
 const Url = require('../Model/Url');
 const Args = require('../Model/Args');
-const Option = require('../Model/Option');
 const path = require("path");
 
+/**
+ * Saves the broken links to file in json format.
+ */
 class BrokenLinksRepository {
     /**
-     * @param option {Option}
-     * @param args {Args}
+     * Create a broken links repo.
+     * @param args {Args} from the commandline.
      */
-    constructor(option, args) {
-        this.option = option;
+    constructor(args) {
+        /**
+         * From the commandline.
+         * @type {Args}
+         */
         this.args = args;
         /**
-         * @type {string}
+         * Folder to save the broken links to.
+         * @type {string} full path to the broken links folder in the project.
          */
         this.folder = '';
         this.createBrokenLinksFolder();
@@ -21,7 +27,7 @@ class BrokenLinksRepository {
 
     /**
      * Saves any broken link urls to a json file.
-     * @returns {Url}
+     * @returns {Url} to save to the folder.
      */
     save(url) {
         let file = path.join(this.folder, url.name + '.json');
@@ -29,13 +35,15 @@ class BrokenLinksRepository {
         fs.writeFileSync(file, json);
     }
 
+    /**
+     * Creates a broken links folder in the project folder.
+     */
     createBrokenLinksFolder() {
         this.folder = path.join(this.args.output.filename, this.args.getSiteName(), 'broken_links');
         if (!fs.existsSync(this.folder)) {
             fs.mkdirSync(this.folder)
         }
     }
-
 }
 
 module.exports = BrokenLinksRepository;

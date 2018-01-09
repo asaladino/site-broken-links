@@ -1,5 +1,9 @@
 const FileDetails = require('./FileDetails');
 
+/**
+ * Available options for the site index.
+ * @type {*[]}
+ */
 module.exports = [
     {
         header: 'Site Broken Links',

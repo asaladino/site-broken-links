@@ -1,17 +1,30 @@
+/**
+ * Url found on the site.
+ */
 class Url {
-    constructor(name, url, fragment) {
-        this.name = name;
-        this.url = url;
-        this.fragment = fragment;
-        this.errorCount = 0;
-        this.tested = false;
+    constructor(entry) {
+        /**
+         * Kind of like a id for file names and look up.
+         * @type {string}
+         */
+        this.name = '';
+        /**
+         * Full url found on the site.
+         * @type {string}
+         */
+        this.url = '';
+        /**
+         * A list of urls found on the page that are broken.
+         * @type {[string]}
+         */
         this.broken = [];
+        Object.assign(this, entry);
     }
 
-    addError() {
-        this.errorCount++;
-    }
-
+    /**
+     * Add a broken url for the page.
+     * @param url {string} that is broken.
+     */
     addBroken(url) {
         this.broken.push(url);
     }

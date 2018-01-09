@@ -1,5 +1,4 @@
 const {HtmlUrlChecker} = require('broken-link-checker');
-const OptionsRepository = require('../Repository/OptionsRepository');
 const UrlsRepository = require('../Repository/UrlsRepository');
 
 const BrokenLinksRepository = require('../Repository/BrokenLinksRepository');
@@ -9,16 +8,13 @@ class BrokenLinksService {
     constructor(args) {
         this.args = args;
         this.events = new Map();
-        // Load the option.
-        let optionsRepository = new OptionsRepository(args);
-        this.option = optionsRepository.getOption();
     }
 
     start() {
         // Load the urls to test.
-        let urlsRepository = new UrlsRepository(this.option, this.args);
-        let urls = urlsRepository.findForRange();
-        let brokenLinksRepository = new BrokenLinksRepository(this.option, this.args);
+        let urlsRepository = new UrlsRepository(this.args);
+        let urls = urlsRepository.findAll();
+        let brokenLinksRepository = new BrokenLinksRepository(this.args);
         this.emitStart(urls);
         const htmlUrlChecker = new HtmlUrlChecker({})
             .on('link', (result, /** @type {Url} */url) => {
@@ -79,7 +75,6 @@ class BrokenLinksService {
             }
         });
     }
-
 }
 
 module.exports = BrokenLinksService;
