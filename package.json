@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
+  "repository": "https://github.com/asaladino/site-broken-links",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,7 +13,6 @@
     "ascii-progress": "^1.0.5",
     "broken-link-checker": "stevenvachon/broken-link-checker#v0.8.0",
     "command-line-args": "^4.0.7",
-    "command-line-usage": "^4.0.2",
-    "fs": "0.0.1-security"
+    "command-line-usage": "^4.0.2"
   }
 }
