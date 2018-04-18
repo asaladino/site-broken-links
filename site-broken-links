@@ -21,11 +21,16 @@ if (args.shouldShowHelp()) {
     brokenLinksService.on('start', urls => {
         if (args.verbose) {
             bar = ProgressUtility.build(urls.length);
+            let initialUrl = 'No urls found';
+            if (urls.length > 0) {
+                initialUrl = urls[0].url;
+            }
+            bar.tick(0, {message: 'starting: ' + initialUrl});
         }
-    }).on('progress', url => {
+    }).on('progress', (url, tick) => {
         if (args.verbose) {
-            bar.tick(1, {message: 'checking: ' + url.url});
+            bar.tick(tick, {message: url});
         }
-    }).on('complete', () => console.log('Done'));
+    }).on('complete', () => console.log('\nDone'));
     brokenLinksService.start();
 }
