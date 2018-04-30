@@ -1,36 +1,17 @@
 #!/usr/bin/env node
-
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
 
 const menu = require('./src/Model/Menu');
 const Args = require('./src/Model/Args');
-
-const ProgressUtility = require('./src/Utility/ProgressUtility');
-const BrokenLinksService = require('./src/Service/BrokenLinksService');
+const BrokenLinksController = require('./src/Controller/BrokenLinksController');
 
 let args = new Args(commandLineArgs(menu[1]['optionList']));
 
 if (args.shouldShowHelp()) {
     console.log(getUsage(menu));
 } else {
-    args.output.doesFolderExist();
-    let brokenLinksService = new BrokenLinksService(args);
-    let bar;
     console.log('\nStarting Broken Links');
-    brokenLinksService.on('start', urls => {
-        if (args.verbose) {
-            bar = ProgressUtility.build(urls.length);
-            let initialUrl = 'No urls found';
-            if (urls.length > 0) {
-                initialUrl = urls[0].url;
-            }
-            bar.tick(0, {message: 'starting: ' + initialUrl});
-        }
-    }).on('progress', (url, tick) => {
-        if (args.verbose) {
-            bar.tick(tick, {message: url});
-        }
-    }).on('complete', () => console.log('\nDone'));
-    brokenLinksService.start();
+    let brokenLinksController = new BrokenLinksController(args);
+    brokenLinksController.start().then();
 }

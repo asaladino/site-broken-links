@@ -26,7 +26,7 @@ class BrokenLinksService {
                 if (result.broken) {
                     url.addBroken(result);
                 }
-                this.emitProgress('current: ' + this.shortenUrl(url.url) + '\n checking: ' + this.shortenUrl(result.url.original), 0);
+                this.emitProgress('current: ' + url.name + '\n checking: ' + this.shortenUrl(result.url.original), 0);
             })
             .on('page', (error, pageUrl, url) => {
                 brokenLinksRepository.save(url);
@@ -37,8 +37,16 @@ class BrokenLinksService {
                 this.emitComplete();
             });
         urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
+        if(urls.length === 0) {
+            this.emitComplete();
+        }
     }
 
+    /**
+     * Shorten a url if it is too long.
+     * @param {string} url to shorten
+     * @return {string} new short url.
+     */
     shortenUrl(url) {
         if(url.length > 20) {
             return '...' + url.substring(url.length - 20, url.length);
