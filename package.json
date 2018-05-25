@@ -1,6 +1,6 @@
 {
   "name": "site-broken-links",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
   "repository": "https://github.com/asaladino/site-broken-links",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "ascii-progress": "^1.0.5",
-    "broken-link-checker": "stevenvachon/broken-link-checker#v0.8.0",
+    "broken-link-checker": "asaladino/broken-link-checker#v0.8.0",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2"
   }

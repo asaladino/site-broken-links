@@ -32,12 +32,13 @@ class BrokenLinksService {
                 brokenLinksRepository.save(url);
                 this.emitProgress('next page: ' + this.shortenUrl(pageUrl), 1);
             })
+            .on('error', (error) => {})
             .on('end', () => {
                 this.emitProgress('saving...', 0);
                 this.emitComplete();
             });
         urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
-        if(urls.length === 0) {
+        if (urls.length === 0) {
             this.emitComplete();
         }
     }
@@ -48,7 +49,7 @@ class BrokenLinksService {
      * @return {string} new short url.
      */
     shortenUrl(url) {
-        if(url.length > 20) {
+        if (url.length > 20) {
             return '...' + url.substring(url.length - 20, url.length);
         }
         return url;
