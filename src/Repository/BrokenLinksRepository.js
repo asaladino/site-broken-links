@@ -29,10 +29,12 @@ class BrokenLinksRepository {
      * Saves any broken link urls to a json file.
      * @returns {Url} to save to the folder.
      */
-    save(url) {
+   save(url) {
         let file = path.join(this.folder, url.name + '.json');
-        let json = JSON.stringify(url.broken);
-        fs.writeFileSync(file, json);
+        if (url.broken && url.broken.length) {
+            let json = JSON.stringify(url.broken);
+            fs.writeFileSync(file, json);
+        }
     }
 
     /**
