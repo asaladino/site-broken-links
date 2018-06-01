@@ -1,35 +1,34 @@
-const ProgressUtility = require('../Utility/ProgressUtility');
 const BrokenLinksService = require('../Service/BrokenLinksService');
 
 class BrokenLinksController {
 
     constructor(args) {
         this.args = args;
+        this.logger = new (require('../Utility/Logger'))(args);
     }
 
     start() {
         return new Promise((resolve, reject) => {
             this.args.output.doesFolderExist();
             let brokenLinksService = new BrokenLinksService(this.args);
-            let bar;
-            brokenLinksService.on('start', urls => {
+            brokenLinksService.on('start', progress => {
+                this.logger.report(progress.toLog());
                 if (this.args.verbose) {
-                    bar = ProgressUtility.build(urls.length);
-                    let initialUrl = 'No urls found';
-                    if (urls.length > 0) {
-                        initialUrl = urls[0].url;
-                    }
-                    bar.tick(0, {message: 'starting: ' + initialUrl});
+                    console.log(progress.toString());
                 }
-            }).on('progress', (url, tick) => {
+            }).on('progress', progress => {
+                this.logger.report(progress.toLog());
                 if (this.args.verbose) {
-                    bar.tick(tick, {message: url});
+                    console.log(progress.toString());
                 }
-            }).on('complete', () => {
-                console.log('\nDone');
+            }).on('complete', progress => {
+                this.logger.report(progress.toLog());
+                console.log(progress.toString());
                 resolve();
             });
-            brokenLinksService.start();
+            brokenLinksService.start()
+                .then(() => resolve)
+                .catch(e => reject(e));
         });
     }
 }

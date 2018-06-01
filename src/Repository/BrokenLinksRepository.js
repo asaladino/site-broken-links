@@ -31,7 +31,7 @@ class BrokenLinksRepository {
      */
     save(url) {
         let file = path.join(this.folder, url.name + '.json');
-        let json = JSON.stringify(url.broken);
+        let json = JSON.stringify(url.links);
         fs.writeFileSync(file, json);
     }
 

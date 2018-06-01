@@ -14,19 +14,19 @@ class Url {
          */
         this.url = '';
         /**
-         * A list of urls found on the page that are broken.
-         * @type {[string]}
+         * A list of links found on the page that are broken.
+         * @type {[Link]}
          */
-        this.broken = [];
+        this.links = [];
         Object.assign(this, entry);
     }
 
     /**
-     * Add a broken url for the page.
-     * @param url {string} that is broken.
+     * Add a link for the page.
+     * @param link {Link} that is broken.
      */
-    addBroken(url) {
-        this.broken.push(url);
+    addLinks(link) {
+        this.links.push(link);
     }
 }
 

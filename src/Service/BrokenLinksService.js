@@ -1,5 +1,13 @@
-const {HtmlUrlChecker} = require('broken-link-checker');
 const UrlsRepository = require('../Repository/UrlsRepository');
+const HtmlRepository = require('../Repository/HtmlRepository');
+const Progress = require('../Model/Progress');
+const Url = require('../Model/Url');
+const Link = require('../Model/Link');
+const LinkChecked = require('../Model/LinkChecked');
+const isLinkWorking = require('is-link-working');
+
+const jsdom = require("jsdom");
+const {JSDOM} = jsdom;
 
 const BrokenLinksRepository = require('../Repository/BrokenLinksRepository');
 const fs = require('fs');
@@ -12,47 +20,118 @@ class BrokenLinksService {
         this.events = new Map();
     }
 
-    start() {
+    async start() {
         // Load the urls to test.
         let urlsRepository = new UrlsRepository(this.args);
         let brokenLinksRepository = new BrokenLinksRepository(this.args);
+        let htmlRepository = new HtmlRepository(this.args.getProjectPath());
+
         let urls = urlsRepository.findAll().filter(url => {
             return !fs.existsSync(path.join(brokenLinksRepository.folder, url.name + '.json'));
         });
+        let progress = new Progress(null, urls.length);
 
-        this.emitStart(urls);
-        const htmlUrlChecker = new HtmlUrlChecker({})
-            .on('link', (result, /** @type {Url} */url) => {
-                if (result.broken) {
-                    url.addBroken(result);
+        this.linksChecked = [];
+
+        this.emitStart(progress);
+        for (let url of urls) {
+            const file = htmlRepository.file(url);
+            const dom = await JSDOM.fromFile(file);
+            const links = dom.window.document.querySelectorAll("a");
+            for (let element of links) {
+                let link = new Link(element.innerHTML, element.href, this.getSelector(element), 'a');
+                await this.addCheckedLink(link, url);
+                if (link.isUrlValid()) {
+                    progress.checked(new Url(link));
+                    this.emitProgress(progress);
                 }
-                this.emitProgress('current: ' + url.name + '\n checking: ' + this.shortenUrl(result.url.original), 0);
-            })
-            .on('page', (error, pageUrl, url) => {
-                brokenLinksRepository.save(url);
-                this.emitProgress('next page: ' + this.shortenUrl(pageUrl), 1);
-            })
-            .on('error', (error) => {})
-            .on('end', () => {
-                this.emitProgress('saving...', 0);
-                this.emitComplete();
-            });
-        urls.forEach(url => htmlUrlChecker.enqueue(url.url, url));
-        if (urls.length === 0) {
-            this.emitComplete();
+            }
+            const images = dom.window.document.querySelectorAll("img");
+            for (let element of images) {
+                let link = new Link(element.alt, element.src, this.getSelector(element), 'img');
+                await this.addCheckedLink(link, url);
+                if (link.isUrlValid()) {
+                    progress.checked(new Url(link));
+                    this.emitProgress(progress);
+                }
+            }
+            brokenLinksRepository.save(url);
+            progress.update(url);
+            this.emitProgress(progress);
+        }
+
+        this.emitComplete(progress);
+    }
+
+    findLinkChecked(link) {
+        return this.linksChecked.find(lc => lc.url === link.url);
+    }
+
+    async addCheckedLink(link, url) {
+        link.fixUrl(this.args);
+        if (link.isUrlValid()) {
+            let linkedChecked = this.findLinkChecked(link);
+            if(linkedChecked) {
+                link.working = linkedChecked.working;
+                url.addLinks(link);
+            } else {
+                try {
+                    link.working = await isLinkWorking(link.url);
+                } catch (e) {}
+                url.addLinks(link);
+                this.linksChecked.push(new LinkChecked(link));
+            }
         }
     }
 
     /**
-     * Shorten a url if it is too long.
-     * @param {string} url to shorten
-     * @return {string} new short url.
+     * @module getSelector
+     * @description Generates a unique CSS selector that will match only the passed element.
+     *
+     * @param {element} element - target element
+     * @return {(string|boolean)} CSS selector that will return only the passed element, false if element is not valid
      */
-    shortenUrl(url) {
-        if (url.length > 20) {
-            return '...' + url.substring(url.length - 20, url.length);
+    getSelector(el) {
+        // Iterator for nth-child loop
+        var i = null;
+
+        // Query parts collection
+        var s = [];
+
+        // Current element's tag name
+        var t = null;
+
+        // Iterate through the element's ancestors
+        while (el.parentNode) {
+            // If element has ID, we're done -
+            // build selector from all previous parts
+            if (el.id) {
+                s.unshift('#' + el.id);
+                break;
+            } else {
+                // Reached the body or html tag -
+                // add the tag to the parts collection
+                if (el === el.ownerDocument.documentElement ||
+                    el === el.ownerDocument.body) {
+                    s.unshift(el.tagName.toLowerCase());
+                    // Get the element's position amongst its
+                    // siblings to build an "nth-child" selector
+                } else {
+                    // Grab tagName before iterating through
+                    // siblings in case there is mixed ancestry
+                    t = el.tagName.toLowerCase();
+                    for (i = 1; el.previousElementSibling; i++) {
+                        el = el.previousElementSibling;
+                    }
+                    s.unshift(t + ':nth-child(' + i + ')');
+                }
+                // Repeat for parent
+                el = el.parentNode;
+            }
         }
-        return url;
+
+        // Return all parts, joined
+        return s.join(' > ');
     }
 
     /**
@@ -68,36 +147,36 @@ class BrokenLinksService {
 
     /**
      * Emits that start event.
-     * @param urls {[Url]} found at start.
+     * @param progress {Progress} found at start.
      */
-    emitStart(urls) {
+    emitStart(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'start') {
-                callback(urls);
+                callback(progress);
             }
         });
     }
 
     /**
      * Emits that progress event.
-     * @param url {string} that is currently having its content extracted from.
-     * @param tick should the progress bar move? 0 for no.
+     * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitProgress(url, tick) {
+    emitProgress(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'progress') {
-                callback(url, tick);
+                callback(progress);
             }
         });
     }
 
     /**
      * Emits that complete event when service has finished.
+     * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitComplete() {
+    emitComplete(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'complete') {
-                callback();
+                callback(progress);
             }
         });
     }
