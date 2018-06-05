@@ -30,12 +30,6 @@ class Link {
         this.working = false;
     }
 
-    fixUrl(args) {
-        if (this.url.startsWith('file://')) {
-            this.url = 'http://' + args.domain + this.url.replace('file://', '');
-        }
-    }
-
     isUrlValid() {
         return this.url.startsWith('https://') || this.url.startsWith('http://');
     }

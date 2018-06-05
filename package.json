@@ -1,6 +1,6 @@
 {
   "name": "site-broken-links",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
   "repository": "https://github.com/asaladino/site-broken-links",
@@ -13,8 +13,9 @@
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
     "get-selector": "^1.0.2",
-    "is-link-working": "^2.2.0",
     "jsdom": "^11.5.1",
-    "winston": "^3.0.0-rc5"
+    "winston": "^3.0.0-rc5",
+    "is-online": "latest",
+    "got": "latest"
   }
 }

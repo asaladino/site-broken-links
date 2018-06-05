@@ -4,7 +4,7 @@ const Progress = require('../Model/Progress');
 const Url = require('../Model/Url');
 const Link = require('../Model/Link');
 const LinkChecked = require('../Model/LinkChecked');
-const isLinkWorking = require('is-link-working');
+const isLinkWorking = require('../Utility/IsLinkWorking');
 
 const jsdom = require("jsdom");
 const {JSDOM} = jsdom;
@@ -36,10 +36,10 @@ class BrokenLinksService {
         this.emitStart(progress);
         for (let url of urls) {
             const file = htmlRepository.file(url);
-            const dom = await JSDOM.fromFile(file);
+            const dom = await JSDOM.fromFile(file, {url: url.url});
             const links = dom.window.document.querySelectorAll("a");
             for (let element of links) {
-                let link = new Link(element.innerHTML, element.href, this.getSelector(element), 'a');
+                let link = new Link(element.innerHTML, element.href, BrokenLinksService.getSelector(element), 'a');
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
                     progress.checked(new Url(link));
@@ -48,7 +48,7 @@ class BrokenLinksService {
             }
             const images = dom.window.document.querySelectorAll("img");
             for (let element of images) {
-                let link = new Link(element.alt, element.src, this.getSelector(element), 'img');
+                let link = new Link(element.alt, element.src, BrokenLinksService.getSelector(element), 'img');
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
                     progress.checked(new Url(link));
@@ -68,16 +68,17 @@ class BrokenLinksService {
     }
 
     async addCheckedLink(link, url) {
-        link.fixUrl(this.args);
         if (link.isUrlValid()) {
             let linkedChecked = this.findLinkChecked(link);
-            if(linkedChecked) {
+            if (linkedChecked) {
                 link.working = linkedChecked.working;
                 url.addLinks(link);
             } else {
                 try {
                     link.working = await isLinkWorking(link.url);
-                } catch (e) {}
+                } catch (e) {
+                    console.log(e);
+                }
                 url.addLinks(link);
                 this.linksChecked.push(new LinkChecked(link));
             }
@@ -88,19 +89,16 @@ class BrokenLinksService {
      * @module getSelector
      * @description Generates a unique CSS selector that will match only the passed element.
      *
-     * @param {element} element - target element
+     * @param {Element} el - target element
      * @return {(string|boolean)} CSS selector that will return only the passed element, false if element is not valid
      */
-    getSelector(el) {
+    static getSelector(el) {
         // Iterator for nth-child loop
-        var i = null;
-
+        let i = null;
         // Query parts collection
-        var s = [];
-
+        const s = [];
         // Current element's tag name
-        var t = null;
-
+        let t = null;
         // Iterate through the element's ancestors
         while (el.parentNode) {
             // If element has ID, we're done -
@@ -129,7 +127,6 @@ class BrokenLinksService {
                 el = el.parentNode;
             }
         }
-
         // Return all parts, joined
         return s.join(' > ');
     }
