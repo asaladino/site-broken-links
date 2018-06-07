@@ -16,12 +16,27 @@ class Args {
          * Domain being indexed.
          * @type {string|*}
          */
+        /**
+         * Domain being indexed.
+         * @type {string|*}
+         */
         this.domain = null;
+         /**
+         * The base url of the site being indexed.
+         * @type {string|*}
+         */
+        this.baseUrl = null;
         /**
          * Should progress information be output to the console?
          * @type {boolean}
          */
         this.verbose = true;
+
+         /**
+         * Should progress information be output to the console?
+         * @type {boolean}
+         */
+        this.rescan = false;
         Object.assign(this, params);
     }
 
@@ -30,7 +45,7 @@ class Args {
      * @returns {boolean} true if the mandatory options are not passed.
      */
     shouldShowHelp() {
-        return this.hasOwnProperty('help') || (this.domain === null || this.output === null);
+        return this.hasOwnProperty('help') || (this.domain === null || this.output === null || this.baseUrl === null);
     }
 
     /**

@@ -19,6 +19,12 @@ module.exports = [
                 description: '(Required) Domain to run broken links reports on.'
             },
             {
+                name: 'baseUrl',
+                type: String,
+                typeLabel: '[underline]{https://www.domain.com}',
+                description: '(Required) Base URL of the site being scanned.  Used to resolve relative URLs.  Do not include trailing slash'
+            },
+            {
                 name: 'output',
                 type: filename => new FileDetails(filename),
                 typeLabel: '[underline]{file}',
@@ -29,6 +35,12 @@ module.exports = [
                 defaultValue: false,
                 type: Boolean,
                 description: 'Output information on the reporting.'
+            },
+            {
+                name: 'rescan',
+                defaultValue: false,
+                type: Boolean,
+                description: 'Force rescan of all URLs.'
             },
             {
                 name: 'help',
