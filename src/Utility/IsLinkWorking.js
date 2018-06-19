@@ -67,12 +67,16 @@ function tryGet(link, options, gotOptions) {
             .on('request', (req_) => { req = req_; })
             .on('response', (res) => {
                 res.on('error', () => {});  // Swallow any response errors, because we are going to abort the request
-                setImmediate(() => req.abort());
+                if(req) {
+                    setImmediate(() => req.abort());
+                }
                 resolve(true);
             })
             .on('error', (err, body, res) => {
                 res && res.on('error', () => {});  // Swallow any response errors, because we are going to abort the request
-                setImmediate(() => req.abort());
+                if(req) {
+                    setImmediate(() => req.abort());
+                }
 
                 if (err instanceof got.MaxRedirectsError || err instanceof got.HTTPError) {
                     return resolve(false);

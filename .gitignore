@@ -1,3 +1,4 @@
 node_modules/
 broken/*.csv
 .idea/
+.vscode/

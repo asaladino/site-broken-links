@@ -7,7 +7,7 @@ const LinkChecked = require('../Model/LinkChecked');
 const isLinkWorking = require('../Utility/IsLinkWorking');
 
 const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+const {JSDOM} = jsdom;
 
 const BrokenLinksRepository = require('../Repository/BrokenLinksRepository');
 const fs = require('fs');
@@ -26,14 +26,9 @@ class BrokenLinksService {
         let brokenLinksRepository = new BrokenLinksRepository(this.args);
         let htmlRepository = new HtmlRepository(this.args.getProjectPath());
 
-        let urls;
-        if (this.args.rescan) {
-            urls = urlsRepository.findAll();
-        } else {
-            urls = urlsRepository.findAll().filter(url => {
-                return !fs.existsSync(path.join(brokenLinksRepository.folder, url.name + '.json'));
-            });
-        }
+        let urls = urlsRepository.findAll().filter(url => {
+            return !fs.existsSync(path.join(brokenLinksRepository.folder, url.name + '.json'));
+        });
 
         let progress = new Progress(null, urls.length);
 
@@ -42,10 +37,10 @@ class BrokenLinksService {
         this.emitStart(progress);
         for (let url of urls) {
             const file = htmlRepository.file(url);
-            const dom = await JSDOM.fromFile(file, { url: url.url, includeNodeLocations: true });
+            const dom = await JSDOM.fromFile(file, {url: url.url, includeNodeLocations: true});
             const links = dom.window.document.querySelectorAll("a");
             for (let element of links) {
-                let link = new Link(element.title || element.innerHTML, element.href, BrokenLinksService.getSelector(element), 'a', this.args.baseUrl, dom.nodeLocation(element));
+                let link = new Link(element.title || element.innerHTML, element.href, BrokenLinksService.getSelector(element), 'a', dom.nodeLocation(element));
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
                     progress.checked(new Url(link));
@@ -54,7 +49,7 @@ class BrokenLinksService {
             }
             const images = dom.window.document.querySelectorAll("img");
             for (let element of images) {
-                let link = new Link(element.alt, element.src, BrokenLinksService.getSelector(element), 'img', this.args.baseUrl, dom.nodeLocation(element));
+                let link = new Link(element.alt, element.src, BrokenLinksService.getSelector(element), 'img', dom.nodeLocation(element));
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
                     progress.checked(new Url(link));
@@ -81,7 +76,7 @@ class BrokenLinksService {
                 url.addLinks(link);
             } else {
                 try {
-                    link.working = await isLinkWorking(link.absoluteUrl());
+                    link.working = await isLinkWorking(link.url);
                 } catch (e) {
                     console.log(e);
                 }
