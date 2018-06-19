@@ -2,7 +2,7 @@
  * Url found on the site.
  */
 class Link {
-    constructor(title, url, selector, type, baseUrl) {
+    constructor(title, url, selector, type, baseUrl, nodeLocation) {
         /**
          * Kind of like a id for file names and look up.
          * @type {string}
@@ -33,7 +33,13 @@ class Link {
          * @type {boolean}
          */
         this.working = false;
+        /**
+         * Node location information
+         * @type {object}
+         */
+        this.nodeLocation = nodeLocation;
         this.isRealitiveUrl = this.isRealitiveUrl.bind(this);
+
     }
 
     isUrlValid() {
