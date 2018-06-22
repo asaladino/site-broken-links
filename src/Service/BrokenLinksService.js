@@ -10,6 +10,7 @@ const jsdom = require("jsdom");
 const {JSDOM} = jsdom;
 
 const BrokenLinksRepository = require('../Repository/BrokenLinksRepository');
+const LinksCheckedRepository = require('../Repository/LinksCheckedRepository');
 const fs = require('fs');
 const path = require("path");
 
@@ -25,14 +26,14 @@ class BrokenLinksService {
         let urlsRepository = new UrlsRepository(this.args);
         let brokenLinksRepository = new BrokenLinksRepository(this.args);
         let htmlRepository = new HtmlRepository(this.args.getProjectPath());
+        this.linksCheckedRepository = new LinksCheckedRepository(this.args);
+        this.emitComplete(new Progress(null, 0));
 
         let urls = urlsRepository.findAll().filter(url => {
             return !fs.existsSync(path.join(brokenLinksRepository.folder, url.name + '.json'));
         });
 
         let progress = new Progress(null, urls.length);
-
-        this.linksChecked = [];
 
         this.emitStart(progress);
         for (let url of urls) {
@@ -60,17 +61,13 @@ class BrokenLinksService {
             progress.update(url);
             this.emitProgress(progress);
         }
-
+        this.linksCheckedRepository.close();
         this.emitComplete(progress);
-    }
-
-    findLinkChecked(link) {
-        return this.linksChecked.find(lc => lc.url === link.url);
     }
 
     async addCheckedLink(link, url) {
         if (link.isUrlValid()) {
-            let linkedChecked = this.findLinkChecked(link);
+            let linkedChecked = this.linksCheckedRepository.find(link);
             if (linkedChecked) {
                 link.working = linkedChecked.working;
                 url.addLinks(link);
@@ -81,7 +78,7 @@ class BrokenLinksService {
                     console.log(e);
                 }
                 url.addLinks(link);
-                this.linksChecked.push(new LinkChecked(link));
+                this.linksCheckedRepository.save(new LinkChecked(link));
             }
         }
     }
