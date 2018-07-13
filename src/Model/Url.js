@@ -25,8 +25,15 @@ class Url {
      * Add a link for the page.
      * @param link {Link} that is broken.
      */
-    addLinks(link) {
+    addLink(link) {
         this.links.push(link);
+    }
+
+    /**
+     * Clear all links.
+     */
+    clearLinks() {
+        this.links =[];
     }
 }
 

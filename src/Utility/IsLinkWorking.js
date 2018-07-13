@@ -2,44 +2,6 @@
 
 const WritableStream = require('stream').Writable;
 const got = require('got');
-const isOnline = require('is-online');
-
-let isOnlineCache;
-
-function isOnlineAsPromise() {
-    // Cache the isOnline() result up to `exports.connectivityCacheDuration` ms
-    if (isOnlineCache && isOnlineCache.cachedAt > Date.now() - module.exports.connectivityCacheDuration) {
-        return isOnlineCache;
-    }
-
-    isOnlineCache = new Promise((resolve, reject) => {
-        isOnline((err, online) => {
-            if (err) {
-                delete isOnlineCache.promise;  // Do not cache errors
-                /* istanbul ignore next */
-                reject(err);
-            } else {
-                resolve(online);
-            }
-        });
-    });
-
-    isOnlineCache.cachedAt = Date.now();
-
-    return isOnlineCache;
-}
-
-function checkConnectivity(requestErr) {
-    return isOnlineAsPromise()
-        .catch(() => { throw requestErr; })
-        .then((online) => {
-            if (!online) {
-                throw requestErr;
-            }
-
-            return false;
-        });
-}
 
 class DevNull extends WritableStream {
     _write(chunk, encoding, callback) {
@@ -64,31 +26,19 @@ function tryGet(link, options, gotOptions) {
         }
 
         stream
-            .on('request', (req_) => { req = req_; })
+            .on('request', (req_) => {
+                req = req_;
+            })
             .on('response', (res) => {
-                res.on('error', () => {});  // Swallow any response errors, because we are going to abort the request
-                if(req) {
+                res.on('error', () => {
+                });  // Swallow any response errors, because we are going to abort the request
+                if (req) {
                     setImmediate(() => req.abort());
                 }
                 resolve(true);
             })
             .on('error', (err, body, res) => {
-                res && res.on('error', () => {});  // Swallow any response errors, because we are going to abort the request
-                if(req) {
-                    setImmediate(() => req.abort());
-                }
-
-                if (err instanceof got.MaxRedirectsError || err instanceof got.HTTPError) {
-                    return resolve(false);
-                }
-
-                /* istanbul ignore else */
-                if (err instanceof got.RequestError) {
-                    return resolve(options.checkConnectivity ? checkConnectivity(err) : false);
-                }
-
-                /* istanbul ignore next */
-                reject(err);
+                return resolve(false);
             })
             .pipe(new DevNull());
     });

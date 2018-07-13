@@ -1,4 +1,5 @@
 const Url = require('./Url');
+const Link = require('./Link');
 
 /**
  * Class for reporting the progress.
@@ -14,6 +15,7 @@ class Progress {
         this.url = url;
         this.total = total;
         this.progress = 0;
+        this.working = true;
     }
 
     /**
@@ -21,7 +23,10 @@ class Progress {
      * @returns {String}
      */
     toString() {
-        return this.total + ' | ' + this.progress + ' :: retrieving: ' + (this.url === null ? null : this.url.url);
+        return this.total + ' | ' +
+            this.progress + ' :: tested - ' +
+            (this.working ? 'working' : 'broken ') + ' - ' +
+            (this.url === null ? null : this.url.url);
     }
 
     /**
@@ -32,6 +37,7 @@ class Progress {
         return {
             total: this.total,
             progress: this.progress,
+            working: this.working,
             url: this.url === null ? null : this.url.url
         }
     }
@@ -50,13 +56,14 @@ class Progress {
 
     /**
      * Just updating the url.
-     * @param url {Url} that was checked.
+     * @param link {Link} that was checked.
      */
-    checked(url) {
+    checked(link) {
         this.url = {
-            name: url.name,
-            url: url.url
+            name: link.title,
+            url: link.url
         }
+        this.working = link.working;
     }
 }
 

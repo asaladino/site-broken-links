@@ -44,7 +44,7 @@ class BrokenLinksService {
                 let link = new Link(element.title || element.innerHTML, element.href, BrokenLinksService.getSelector(element), 'a', dom.nodeLocation(element));
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
-                    progress.checked(new Url(link));
+                    progress.checked(link);
                     this.emitProgress(progress);
                 }
             }
@@ -53,11 +53,12 @@ class BrokenLinksService {
                 let link = new Link(element.alt, element.src, BrokenLinksService.getSelector(element), 'img', dom.nodeLocation(element));
                 await this.addCheckedLink(link, url);
                 if (link.isUrlValid()) {
-                    progress.checked(new Url(link));
+                    progress.checked(link);
                     this.emitProgress(progress);
                 }
             }
             brokenLinksRepository.save(url);
+            url.clearLinks();
             progress.update(url);
             this.emitProgress(progress);
         }
@@ -70,14 +71,14 @@ class BrokenLinksService {
             let linkedChecked = this.linksCheckedRepository.find(link);
             if (linkedChecked) {
                 link.working = linkedChecked.working;
-                url.addLinks(link);
+                url.addLink(link);
             } else {
                 try {
                     link.working = await isLinkWorking(link.url);
                 } catch (e) {
                     console.log(e);
                 }
-                url.addLinks(link);
+                url.addLink(link);
                 this.linksCheckedRepository.save(new LinkChecked(link));
             }
         }
