@@ -7,6 +7,10 @@ class BrokenLinksController {
         this.logger = new (require('../Utility/Logger'))(args);
     }
 
+    /**
+     * @Todo: Finished but did not exit.
+     * @returns {Promise}
+     */
     start() {
         return new Promise((resolve, reject) => {
             this.args.output.doesFolderExist();
@@ -24,10 +28,9 @@ class BrokenLinksController {
             }).on('complete', progress => {
                 this.logger.report(progress.toLog());
                 console.log(progress.toString());
-                resolve();
             });
             brokenLinksService.start()
-                .then(() => resolve)
+                .then(() => resolve())
                 .catch(e => reject(e));
         });
     }

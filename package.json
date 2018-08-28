@@ -1,6 +1,6 @@
 {
   "name": "site-broken-links",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
   "repository": "https://github.com/asaladino/site-broken-links",
