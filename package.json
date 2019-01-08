@@ -1,6 +1,6 @@
 {
   "name": "site-broken-links",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
   "repository": "https://github.com/asaladino/site-broken-links",
@@ -10,11 +10,11 @@
   "author": "Adam Saladino<adam@codingsimply.com>",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^4.1.4",
+    "better-sqlite3": "^5.2.1",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
     "get-selector": "^1.0.2",
-    "got": "^8.3.1",
+    "got": "^9.5.0",
     "jsdom": "^11.5.1",
     "winston": "^3.0.0-rc5"
   }
