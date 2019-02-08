@@ -1,18 +1,18 @@
-const UrlsRepository = require('../Repository/UrlsRepository');
-const HtmlRepository = require('../Repository/HtmlRepository');
-const Progress = require('../Model/Progress');
-const Url = require('../Model/Url');
-const Link = require('../Model/Link');
-const LinkChecked = require('../Model/LinkChecked');
-const isLinkWorking = require('../Utility/IsLinkWorking');
+import UrlsRepository from '../Repository/UrlsRepository';
+import HtmlRepository from '../Repository/HtmlRepository';
+import Progress from '../Model/Progress';
+import Url from '../Model/Url';
+import Link from '../Model/Link';
+import LinkChecked from '../Model/LinkChecked';
+import isLinkWorking from '../Utility/IsLinkWorking';
 
-const jsdom = require("jsdom");
+import jsdom from "jsdom";
 const {JSDOM} = jsdom;
 
-const BrokenLinksRepository = require('../Repository/BrokenLinksRepository');
-const LinksCheckedRepository = require('../Repository/LinksCheckedRepository');
-const fs = require('fs');
-const path = require("path");
+import BrokenLinksRepository from '../Repository/BrokenLinksRepository';
+import LinksCheckedRepository from '../Repository/LinksCheckedRepository';
+import { existsSync } from 'fs';
+import { join } from "path";
 
 class BrokenLinksService {
 
@@ -30,7 +30,7 @@ class BrokenLinksService {
         this.emitComplete(new Progress(null, 0));
 
         let urls = urlsRepository.findAll().filter(url => {
-            return !fs.existsSync(path.join(brokenLinksRepository.folder, url.name + '.json'));
+            return !existsSync(join(brokenLinksRepository.folder, url.name + '.json'));
         });
 
         let progress = new Progress(null, urls.length);
@@ -178,4 +178,4 @@ class BrokenLinksService {
     }
 }
 
-module.exports = BrokenLinksService;
+export default BrokenLinksService;

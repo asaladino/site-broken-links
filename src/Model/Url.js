@@ -1,7 +1,7 @@
 /**
  * Url found on the site.
  */
-class Url {
+export default class Url {
     constructor(entry) {
         /**
          * Kind of like a id for file names and look up.
@@ -36,5 +36,3 @@ class Url {
         this.links =[];
     }
 }
-
-module.exports = Url;

@@ -1,4 +1,4 @@
-const got = require('got');
+import got from 'got';
 
 async function isLinkWorking(link, options) {
     options = Object.assign({
@@ -28,4 +28,4 @@ async function isLinkWorking(link, options) {
     }
 }
 
-module.exports = isLinkWorking;
+export default isLinkWorking;

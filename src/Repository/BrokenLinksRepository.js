@@ -1,7 +1,7 @@
-const fs = require('fs');
-const Url = require('../Model/Url');
-const Args = require('../Model/Args');
-const path = require("path");
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import Url from '../Model/Url';
+import Args from '../Model/Args';
+import { join } from "path";
 
 /**
  * Saves the broken links to file in json format.
@@ -30,20 +30,20 @@ class BrokenLinksRepository {
      * @returns {Url} to save to the folder.
      */
     save(url) {
-        let file = path.join(this.folder, url.name + '.json');
+        let file = join(this.folder, url.name + '.json');
         let json = JSON.stringify(url.links);
-        fs.writeFileSync(file, json);
+        writeFileSync(file, json);
     }
 
     /**
      * Creates a broken links folder in the project folder.
      */
     createBrokenLinksFolder() {
-        this.folder = path.join(this.args.output.filename, this.args.getSiteName(), 'broken_links');
-        if (!fs.existsSync(this.folder)) {
-            fs.mkdirSync(this.folder)
+        this.folder = join(this.args.output.filename, this.args.getSiteName(), 'broken_links');
+        if (!existsSync(this.folder)) {
+            mkdirSync(this.folder)
         }
     }
 }
 
-module.exports = BrokenLinksRepository;
+export default BrokenLinksRepository;

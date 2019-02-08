@@ -1,6 +1,6 @@
-const BrokenLinksService = require('../Service/BrokenLinksService');
+import BrokenLinksService from '../Service/BrokenLinksService';
 
-class BrokenLinksController {
+export default class BrokenLinksController {
 
     constructor(args) {
         this.args = args;
@@ -35,5 +35,3 @@ class BrokenLinksController {
         });
     }
 }
-
-module.exports = BrokenLinksController;

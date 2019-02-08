@@ -1,6 +1,6 @@
-const FileDetails = require('./FileDetails');
-const path = require("path");
-const fs = require("fs");
+import FileDetails from './FileDetails';
+import { join } from "path";
+import { existsSync, mkdirSync } from "fs";
 
 /**
  * Commandline arguments being passed to the app.
@@ -47,12 +47,12 @@ class Args {
      */
     getProjectPath() {
         let siteName = this.getSiteName();
-        let projectPath = path.join(this.output.filename, siteName);
-        if (!fs.existsSync(projectPath)) {
-            fs.mkdirSync(projectPath);
+        let projectPath = join(this.output.filename, siteName);
+        if (!existsSync(projectPath)) {
+            mkdirSync(projectPath);
         }
         return projectPath;
     }
 }
 
-module.exports = Args;
+export default Args;
