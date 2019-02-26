@@ -1,10 +1,11 @@
 import BrokenLinksService from '../Service/BrokenLinksService';
+import Logger from '../Utility/Logger';
 
 export default class BrokenLinksController {
 
     constructor(args) {
         this.args = args;
-        this.logger = new (require('../Utility/Logger'))(args);
+        this.logger = new Logger(args);
     }
 
     /**

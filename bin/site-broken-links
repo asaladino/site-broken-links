@@ -2,9 +2,9 @@
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
 
-const menu = require('../src/Model/Menu');
-const Args = require('../src/Model/Args');
-const BrokenLinksController = require('../src/Controller/BrokenLinksController');
+const menu = require('../lib/Model/Menu');
+const Args = require('../lib/Model/Args');
+const BrokenLinksController = require('../lib/Controller/BrokenLinksController');
 const cmdArgs = commandLineArgs(menu[1]['optionList']);
 let args = new Args( cmdArgs );
 

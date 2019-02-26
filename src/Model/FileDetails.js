@@ -1,14 +1,15 @@
+// @flow
 import { existsSync } from "fs";
 
 /**
  * Convenience class for checking if a file exists.
  */
 export default class FileDetails {
-  constructor(filename) {
-    /**
-     * File name to get details for.
-     * @type {string}
-     */
+  /**
+   * File name to get details for.
+   */
+  filename: string;
+  constructor(filename: string) {
     this.filename = filename;
   }
 
