@@ -1,23 +1,23 @@
+// @flow
+import Link from "./Link";
+
 /**
  * Url found on the site.
  */
 export default class Url {
-    constructor(entry) {
-        /**
-         * Kind of like a id for file names and look up.
-         * @type {string}
-         */
-        this.name = '';
-        /**
-         * Full url found on the site.
-         * @type {string}
-         */
-        this.url = '';
-        /**
-         * A list of links found on the page that are broken.
-         * @type {[Link]}
-         */
-        this.links = [];
+    /**
+     * Kind of like a id for file names and look up.
+     */
+    name: string;
+    /**
+     * Full url found on the site.
+     */
+    url: string;
+    /**
+     * A list of links found on the page that are broken.
+     */
+    links: Link[];
+    constructor(entry: any) {
         Object.assign(this, entry);
     }
 
@@ -25,7 +25,7 @@ export default class Url {
      * Add a link for the page.
      * @param link {Link} that is broken.
      */
-    addLink(link) {
+    addLink(link: Link) {
         this.links.push(link);
     }
 
