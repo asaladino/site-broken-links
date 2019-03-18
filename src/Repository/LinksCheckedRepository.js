@@ -40,7 +40,6 @@ export default class LinksCheckedRepository {
         this.createBrokenLinksFolder();
         this.db = new Database(this.databaseFile, {});
         this.insertStatement = this.db.prepare('INSERT INTO links_checked VALUES (?, ?)');
-        console.log(typeof this.insertStatement);
     }
 
     /**

@@ -19,6 +19,7 @@ export default class Url {
     links: Link[];
     constructor(entry: any) {
         Object.assign(this, entry);
+        this.links = [];
     }
 
     /**
