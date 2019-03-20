@@ -1,35 +1,36 @@
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+// @flow
+import {writeFileSync, existsSync, mkdirSync} from 'fs';
 import Url from '../Model/Url';
 import Args from '../Model/Args';
-import { join } from "path";
+import {join} from "path";
 
 /**
  * Saves the broken links to file in json format.
  */
-class BrokenLinksRepository {
+export default class BrokenLinksRepository {
+
+    /**
+     * From the commandline.
+     */
+    args: Args;
+    /**
+     * Folder to save the broken links to.
+     */
+    folder: string;
+
     /**
      * Create a broken links repo.
-     * @param args {Args} from the commandline.
      */
-    constructor(args) {
-        /**
-         * From the commandline.
-         * @type {Args}
-         */
+    constructor(args: Args) {
         this.args = args;
-        /**
-         * Folder to save the broken links to.
-         * @type {string} full path to the broken links folder in the project.
-         */
         this.folder = '';
         this.createBrokenLinksFolder();
     }
 
     /**
      * Saves any broken link urls to a json file.
-     * @returns {Url} to save to the folder.
      */
-    save(url) {
+    save(url: Url) {
         let file = join(this.folder, url.name + '.json');
         let json = JSON.stringify(url.links);
         writeFileSync(file, json);
@@ -45,5 +46,3 @@ class BrokenLinksRepository {
         }
     }
 }
-
-export default BrokenLinksRepository;

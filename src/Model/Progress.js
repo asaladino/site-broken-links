@@ -7,17 +7,15 @@ import Link from "./Link";
  * Class for reporting the progress.
  */
 export default class Progress {
-    url: Url;
+    url: ?Url;
     total: number;
     progress: number;
     working: boolean;
 
     /**
      * Build a progress object.
-     * @param url {Url|null} current url
-     * @param total {number} total urls to process.
      */
-    constructor(url: Url, total: number) {
+    constructor(url: ?Url, total: number) {
         this.url = url;
         this.total = total;
         this.progress = 0;
@@ -29,7 +27,7 @@ export default class Progress {
      * @returns {String}
      */
     toString() {
-        let url = this.url !== null ? this.url.url : '';
+        let url = this.url == null ? '' : this.url.url;
         return `${this.total} | ${this.progress} :: tested - ${this.working ? 'working' : 'broken'} - ${url}`;
     }
 
@@ -42,7 +40,7 @@ export default class Progress {
             total: this.total,
             progress: this.progress,
             working: this.working,
-            url: this.url !== null ? this.url.url : ''
+            url: this.url == null ? '' : this.url.url
         };
     }
 

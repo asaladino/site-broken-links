@@ -1,14 +1,15 @@
+// @flow
 import { createLogger, format as _format, transports as _transports } from 'winston';
 import Args from '../Model/Args';
 import { join } from "path";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 
 class Logger {
+    args: Args;
+    logsPath: string;
+    logger: any;
 
-    /**
-     * @param {Args} args
-     */
-    constructor(args) {
+    constructor(args: Args) {
         this.args = args;
         this.logsPath = this.getLogsPath();
         this.logger = createLogger({
@@ -20,7 +21,7 @@ class Logger {
         });
     }
 
-    save(state) {
+    save(state: any): Promise<any> {
         return new Promise((resolve) => {
             let file = join(this.logsPath, 'state.json');
             writeFileSync(file, JSON.stringify(state));
@@ -28,11 +29,11 @@ class Logger {
         });
     }
 
-    info(state) {
+    info(state: any) {
         this.logger.log('info', JSON.stringify(state));
     }
 
-    report(state) {
+    report(state: any) {
         this.save(state);
         this.info(state);
     }

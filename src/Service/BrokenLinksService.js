@@ -1,7 +1,9 @@
+// @flow
 import UrlsRepository from '../Repository/UrlsRepository';
 import HtmlRepository from '../Repository/HtmlRepository';
 import Progress from '../Model/Progress';
 import Url from '../Model/Url';
+import Args from '../Model/Args';
 import Link from '../Model/Link';
 import LinkChecked from '../Model/LinkChecked';
 import isLinkWorking from '../Utility/IsLinkWorking';
@@ -14,9 +16,21 @@ import LinksCheckedRepository from '../Repository/LinksCheckedRepository';
 import { existsSync } from 'fs';
 import { join } from "path";
 
+type HtmlNode = {
+    parentNode: HtmlNode,
+    previousElementSibling: HtmlNode,
+    id: string,
+    tagName: string,
+    ownerDocument: {documentElement: HtmlNode, body: HtmlNode}
+};
+
 class BrokenLinksService {
 
-    constructor(args) {
+    args: Args;
+    events: Map<string, Function>;
+    linksCheckedRepository: LinksCheckedRepository;
+
+    constructor(args: Args) {
         this.args = args;
         this.events = new Map();
     }
@@ -66,7 +80,7 @@ class BrokenLinksService {
         this.emitComplete(progress);
     }
 
-    async addCheckedLink(link, url) {
+    async addCheckedLink(link: Link, url: Url) {
         if (link.isUrlValid()) {
             let linkedChecked = this.linksCheckedRepository.find(link);
             if (linkedChecked) {
@@ -91,7 +105,7 @@ class BrokenLinksService {
      * @param {Element} el - target element
      * @return {(string|boolean)} CSS selector that will return only the passed element, false if element is not valid
      */
-    static getSelector(el) {
+    static getSelector(el: HtmlNode) {
         // Iterator for nth-child loop
         let i = null;
         // Query parts collection
@@ -136,7 +150,7 @@ class BrokenLinksService {
      * @param callback {Function} called when the event is emitted.
      * @returns {BrokenLinksService} for chaining.
      */
-    on(event, callback) {
+    on(event: string, callback: Function): BrokenLinksService {
         this.events.set(event, callback);
         return this;
     }
@@ -145,7 +159,7 @@ class BrokenLinksService {
      * Emits that start event.
      * @param progress {Progress} found at start.
      */
-    emitStart(progress) {
+    emitStart(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'start') {
                 callback(progress);
@@ -157,7 +171,7 @@ class BrokenLinksService {
      * Emits that progress event.
      * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitProgress(progress) {
+    emitProgress(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'progress') {
                 callback(progress);
@@ -169,7 +183,7 @@ class BrokenLinksService {
      * Emits that complete event when service has finished.
      * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitComplete(progress) {
+    emitComplete(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'complete') {
                 callback(progress);

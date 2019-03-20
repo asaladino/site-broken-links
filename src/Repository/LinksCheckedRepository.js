@@ -4,6 +4,7 @@ import {existsSync, mkdirSync, copyFileSync} from 'fs';
 import Args from '../Model/Args';
 import LinkChecked from '../Model/LinkChecked';
 import {join, dirname} from "path";
+import Link from "../Model/Link";
 
 type SqliteDatabase = {
     prepare: (statement: string) => any;
@@ -32,7 +33,6 @@ export default class LinksCheckedRepository {
 
     /**
      * Create a broken links repo.
-     * @param args {Args} from the commandline.
      */
     constructor(args: Args) {
         this.args = args;
@@ -45,7 +45,7 @@ export default class LinksCheckedRepository {
     /**
      * Find a checked link give a link.
      */
-    find(link: LinkChecked): any {
+    find(link: Link): any {
         return this.db.prepare('SELECT * FROM links_checked WHERE url=?').get(link.url);
     }
 
