@@ -1,15 +1,16 @@
-const fs = require("fs");
+// @flow
+import {existsSync} from "fs";
 
 /**
  * Convenience class for checking if a file exists.
  */
-class FileDetails {
+export default class FileDetails {
+    /**
+     * File name to get details for.
+     */
+    filename: string;
 
-    constructor(filename) {
-        /**
-         * File name to get details for.
-         * @type {string}
-         */
+    constructor(filename: string) {
         this.filename = filename;
     }
 
@@ -18,10 +19,8 @@ class FileDetails {
      * @throws file not found exception.
      */
     doesFolderExist() {
-        if (!fs.existsSync(this.filename)) {
-            throw 'Output folder not found:' + this.filename;
+        if (!existsSync(this.filename)) {
+            throw "Output folder not found:" + this.filename;
         }
     }
 }
-
-module.exports = FileDetails;

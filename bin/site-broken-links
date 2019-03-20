@@ -2,11 +2,11 @@
 const commandLineArgs = require('command-line-args');
 const getUsage = require('command-line-usage');
 
-const menu = require('./src/Model/Menu');
-const Args = require('./src/Model/Args');
-const BrokenLinksController = require('./src/Controller/BrokenLinksController');
+const menu = require('../lib/Model/Menu').default;
+const Args = require('../lib/Model/Args').default;
+const BrokenLinksController = require('../lib/Controller/BrokenLinksController').default;
 const cmdArgs = commandLineArgs(menu[1]['optionList']);
-let args = new Args( cmdArgs );
+let args = new Args(cmdArgs);
 
 if (args.shouldShowHelp()) {
     console.log(getUsage(menu));

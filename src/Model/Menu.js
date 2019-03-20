@@ -1,10 +1,14 @@
-const FileDetails = require('./FileDetails');
+// @flow
+import FileDetails from './FileDetails';
+
+const getFileDetails = (filename: string): FileDetails => {
+    return new FileDetails(filename);
+};
 
 /**
  * Available options for the site index.
- * @type {*[]}
  */
-module.exports = [
+export default [
     {
         header: 'Site Broken Links',
         content: 'Check a site for broken links.'
@@ -20,7 +24,7 @@ module.exports = [
             },
             {
                 name: 'output',
-                type: filename => new FileDetails(filename),
+                type: getFileDetails,
                 typeLabel: '[underline]{file}',
                 description: '(Required) Folder to output the reports to.'
             },

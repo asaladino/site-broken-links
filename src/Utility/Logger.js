@@ -1,55 +1,56 @@
-const winston = require('winston');
-const Args = require('../Model/Args');
-const path = require("path");
-const fs = require("fs");
+// @flow
+import { createLogger, format as _format, transports as _transports } from 'winston';
+import Args from '../Model/Args';
+import { join } from "path";
+import { writeFileSync, existsSync, mkdirSync } from "fs";
 
 class Logger {
+    args: Args;
+    logsPath: string;
+    logger: any;
 
-    /**
-     * @param {Args} args
-     */
-    constructor(args) {
+    constructor(args: Args) {
         this.args = args;
         this.logsPath = this.getLogsPath();
-        this.logger = winston.createLogger({
+        this.logger = createLogger({
             level: 'info',
-            format: winston.format.json(),
+            format: _format.json(),
             transports: [
-                new winston.transports.File({filename: path.join(this.logsPath, 'last_run.log')})
+                new _transports.File({filename: join(this.logsPath, 'last_run.log')})
             ]
         });
     }
 
-    save(state) {
+    save(state: any): Promise<any> {
         return new Promise((resolve) => {
-            let file = path.join(this.logsPath, 'state.json');
-            fs.writeFileSync(file, JSON.stringify(state));
+            let file = join(this.logsPath, 'state.json');
+            writeFileSync(file, JSON.stringify(state));
             resolve();
         });
     }
 
-    info(state) {
+    info(state: any) {
         this.logger.log('info', JSON.stringify(state));
     }
 
-    report(state) {
+    report(state: any) {
         this.save(state);
         this.info(state);
     }
 
     getLogsPath() {
-        let logsPathBase = path.join(this.args.getProjectPath(), 'logs');
-        if (!fs.existsSync(logsPathBase)) {
-            fs.mkdirSync(logsPathBase);
+        let logsPathBase = join(this.args.getProjectPath(), 'logs');
+        if (!existsSync(logsPathBase)) {
+            mkdirSync(logsPathBase);
         }
 
-        let logsPath = path.join(this.args.getProjectPath(), 'logs', 'broken_links');
-        if (!fs.existsSync(logsPath)) {
-            fs.mkdirSync(logsPath);
+        let logsPath = join(this.args.getProjectPath(), 'logs', 'broken_links');
+        if (!existsSync(logsPath)) {
+            mkdirSync(logsPath);
         }
         return logsPath;
     }
 
 }
 
-module.exports = Logger;
+export default Logger;

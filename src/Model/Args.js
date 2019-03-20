@@ -1,27 +1,26 @@
-const FileDetails = require('./FileDetails');
-const path = require("path");
-const fs = require("fs");
+// @flow
+import FileDetails from './FileDetails';
+import { join } from "path";
+import { existsSync, mkdirSync } from "fs";
 
 /**
  * Commandline arguments being passed to the app.
  */
-class Args {
-    constructor(params) {
-        /**
-         * Project directory to output the app results.
-         * @type {FileDetails|null}
-         */
-        this.output = null;
-        /**
-         * Domain being indexed.
-         * @type {string|*}
-         */
-        this.domain = null;
-        /**
-         * Should progress information be output to the console?
-         * @type {boolean}
-         */
-        this.verbose = true;
+export default class Args {
+    /**
+     * Project directory to output the app results.
+     */
+    output: FileDetails;
+    /**
+     * Domain being indexed.
+     */
+    domain: string;
+    /**
+     * Should progress information be output to the console?
+     */
+    verbose: boolean;
+
+    constructor(params: any) {
         Object.assign(this, params);
     }
 
@@ -29,7 +28,7 @@ class Args {
      * If the mandatory options are not passed then show the menu.
      * @returns {boolean} true if the mandatory options are not passed.
      */
-    shouldShowHelp() {
+    shouldShowHelp(): boolean {
         return this.hasOwnProperty('help') || (this.domain === null || this.output === null);
     }
 
@@ -37,7 +36,7 @@ class Args {
      * Get the site name from the domain.
      * @returns {string} the site name.
      */
-    getSiteName() {
+    getSiteName(): string {
         return this.domain.replace(/[.]/g, '_');
     }
 
@@ -47,12 +46,10 @@ class Args {
      */
     getProjectPath() {
         let siteName = this.getSiteName();
-        let projectPath = path.join(this.output.filename, siteName);
-        if (!fs.existsSync(projectPath)) {
-            fs.mkdirSync(projectPath);
+        let projectPath = join(this.output.filename, siteName);
+        if (!existsSync(projectPath)) {
+            mkdirSync(projectPath);
         }
         return projectPath;
     }
 }
-
-module.exports = Args;

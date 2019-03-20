@@ -1,46 +1,59 @@
-const Database = require('better-sqlite3');
-const fs = require('fs');
-const Args = require('../Model/Args');
-const LinkChecked = require('../Model/LinkChecked');
-const path = require("path");
+// @flow
+import Database from 'better-sqlite3';
+import {existsSync, mkdirSync, copyFileSync} from 'fs';
+import Args from '../Model/Args';
+import LinkChecked from '../Model/LinkChecked';
+import {join, dirname} from "path";
+import Link from "../Model/Link";
 
-class LinksCheckedRepository {
+type SqliteDatabase = {
+    prepare: (statement: string) => any;
+    close: () => void;
+};
+
+export default class LinksCheckedRepository {
+
+    db: SqliteDatabase;
+    /**
+     * From the commandline.
+     */
+    args: Args;
+    /**
+     * Folder to save the broken links to.
+     */
+    folder: string;
+    /**
+     * Location of the database file.
+     */
+    databaseFile: string;
+    /**
+     * Reusable insert statement.
+     */
+    insertStatement: any;
+
     /**
      * Create a broken links repo.
-     * @param args {Args} from the commandline.
      */
-    constructor(args) {
-        /**
-         * From the commandline.
-         * @type {Args}
-         */
+    constructor(args: Args) {
         this.args = args;
-        /**
-         * Folder to save the broken links to.
-         * @type {string} full path to the broken links folder in the project.
-         */
         this.folder = '';
         this.createBrokenLinksFolder();
-
         this.db = new Database(this.databaseFile, {});
-        this.insertStatment = this.db.prepare('INSERT INTO links_checked VALUES (?, ?)');
+        this.insertStatement = this.db.prepare('INSERT INTO links_checked VALUES (?, ?)');
     }
 
     /**
      * Find a checked link give a link.
-     * @param link {Link}
-     * @return {LinkChecked}
      */
-    find(link) {
+    find(link: Link): any {
         return this.db.prepare('SELECT * FROM links_checked WHERE url=?').get(link.url);
     }
 
     /**
      * Save the checked link.
-     * @param linkChecked {LinkChecked}
      */
-    save(linkChecked) {
-        this.insertStatment.run([linkChecked.url, linkChecked.working ? 1 : 0]);
+    save(linkChecked: LinkChecked) {
+        this.insertStatement.run([linkChecked.url, linkChecked.working ? 1 : 0]);
     }
 
     /**
@@ -54,20 +67,14 @@ class LinksCheckedRepository {
      * Creates a broken links folder in the project folder.
      */
     createBrokenLinksFolder() {
-        this.folder = path.join(this.args.output.filename, this.args.getSiteName(), 'broken_links');
-        if (!fs.existsSync(this.folder)) {
-            fs.mkdirSync(this.folder)
+        this.folder = join(this.args.output.filename, this.args.getSiteName(), 'broken_links');
+        if (!existsSync(this.folder)) {
+            mkdirSync(this.folder)
         }
-        this.databaseFile = path.join(this.folder, 'links_checked.sqlite');
-
-
-        if (!fs.existsSync(this.databaseFile)) {
-            let tempDbFile = path.join(path.dirname(__filename), '../Asset/links_checked.sqlite');
-
-            fs.copyFileSync(tempDbFile, this.databaseFile)
+        this.databaseFile = join(this.folder, 'links_checked.sqlite');
+        if (!existsSync(this.databaseFile)) {
+            let tempDbFile = join(dirname(__filename), '../Asset/links_checked.sqlite');
+            copyFileSync(tempDbFile, this.databaseFile)
         }
     }
-
 }
-
-module.exports = LinksCheckedRepository;
