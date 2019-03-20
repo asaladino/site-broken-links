@@ -1,11 +1,16 @@
 {
   "name": "site-broken-links",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Find broken links on a site.",
   "main": "site-broken-links",
   "repository": "https://github.com/asaladino/site-broken-links",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/site-broken-links",
+    "build": "babel src -d lib -s",
+    "babel": "babel --help",
+    "prepublish": "npm run build",
+    "flow": "flow",
+    "test": "jest"
   },
   "author": "Adam Saladino<adam@codingsimply.com>",
   "license": "MIT",
@@ -16,6 +21,17 @@
     "get-selector": "^1.0.2",
     "got": "^9.5.0",
     "jsdom": "^11.5.1",
-    "winston": "^3.0.0-rc5"
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/eslint-plugin-development": "^1.0.1",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-flow": "^7.0.0",
+    "chardet": "^0.7.0",
+    "circular-json": "^0.5.9",
+    "flow-bin": "^0.92.0",
+    "jest": "^24.0.0"
   }
 }

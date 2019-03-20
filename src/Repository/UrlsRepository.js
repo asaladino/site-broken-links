@@ -1,29 +1,31 @@
-const fs = require('fs');
-const Url = require('../Model/Url');
-const Args = require('../Model/Args');
-const path = require("path");
+// @flow
+import {readFileSync} from 'fs';
+import Url from '../Model/Url';
+import Args from '../Model/Args';
+import {join} from "path";
 
 /**
  * Retrieve all the urls for the domain.
  */
-class UrlsRepository {
+export default class UrlsRepository {
+    /**
+     * Args passed from the commandline.
+     */
+    args: Args;
 
     /**
      * Build the url repo.
      * @param args {Args} passed from the commandline.
      */
-    constructor(args) {
+    constructor(args: Args) {
         this.args = args;
     }
 
     /**
      * Find all urls.
-     * @returns {[Url]} from the domain.
      */
-    findAll() {
-        let urlsFile = path.join(this.args.output.filename, this.args.getSiteName(), 'urls', 'urls.json');
-        return JSON.parse(fs.readFileSync(urlsFile).toString()).map(entry => new Url(entry));
+    findAll(): Url[] {
+        let urlsFile = join(this.args.output.filename, this.args.getSiteName(), 'urls', 'urls.json');
+        return JSON.parse(readFileSync(urlsFile).toString()).map(entry => new Url(entry));
     }
 }
-
-module.exports = UrlsRepository;

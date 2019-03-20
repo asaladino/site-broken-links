@@ -1,20 +1,21 @@
+// @flow
+import Link from "./Link";
+
 /**
  * Url found on the site.
  */
-class LinkChecked {
-    constructor(link) {
-        /**
-         * Full url found on the site.
-         * @type {string}
-         */
+export default class LinkChecked {
+    /**
+     * Full url found on the site.
+     */
+    url: string;
+    /**
+     * Is the link working?
+     */
+    working: boolean;
+
+    constructor(link: Link) {
         this.url = link.url;
-        /**
-         * Is the link working?
-         * @type {boolean}
-         */
         this.working = link.working;
     }
-
 }
-
-module.exports = LinkChecked;

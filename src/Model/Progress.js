@@ -1,17 +1,21 @@
-const Url = require('./Url');
-const Link = require('./Link');
+// @flow
+
+import Url from "./Url";
+import Link from "./Link";
 
 /**
  * Class for reporting the progress.
  */
-class Progress {
+export default class Progress {
+    url: ?Url;
+    total: number;
+    progress: number;
+    working: boolean;
 
     /**
      * Build a progress object.
-     * @param url {Url|null} current url
-     * @param total {number} total urls to process.
      */
-    constructor(url = null, total = 0) {
+    constructor(url: ?Url, total: number) {
         this.url = url;
         this.total = total;
         this.progress = 0;
@@ -23,34 +27,29 @@ class Progress {
      * @returns {String}
      */
     toString() {
-        return this.total + ' | ' +
-            this.progress + ' :: tested - ' +
-            (this.working ? 'working' : 'broken ') + ' - ' +
-            (this.url === null ? null : this.url.url);
+        let url = this.url == null ? '' : this.url.url;
+        return `${this.total} | ${this.progress} :: tested - ${this.working ? 'working' : 'broken'} - ${url}`;
     }
 
     /**
      * Something to report in the logs.
      * @return {{urlsPoolLength: number, urlsLength: number, url: string}}
      */
-    toLog() {
+    toLog(): Object {
         return {
             total: this.total,
             progress: this.progress,
             working: this.working,
-            url: this.url === null ? null : this.url.url
-        }
+            url: this.url == null ? '' : this.url.url
+        };
     }
 
     /**
      * Update the progress.
      * @param url {Url} that was just processed.
      */
-    update(url) {
-        this.url = {
-            name: url.name,
-            url: url.url
-        };
+    update(url: Url) {
+        this.url = new Url({...url});
         this.progress++;
     }
 
@@ -58,13 +57,8 @@ class Progress {
      * Just updating the url.
      * @param link {Link} that was checked.
      */
-    checked(link) {
-        this.url = {
-            name: link.title,
-            url: link.url
-        }
+    checked(link: Link) {
+        this.url = new Url({name: link.title, url: link.url});
         this.working = link.working;
     }
 }
-
-module.exports = Progress;

@@ -1,6 +1,7 @@
-const got = require('got');
+// @flow
+import got from 'got';
 
-async function isLinkWorking(link, options) {
+async function isLinkWorking(link: string, options: ?any) {
     options = Object.assign({
         checkConnectivity: false,
         followRedirect: true,
@@ -28,4 +29,4 @@ async function isLinkWorking(link, options) {
     }
 }
 
-module.exports = isLinkWorking;
+export default isLinkWorking;

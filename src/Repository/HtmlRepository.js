@@ -1,44 +1,40 @@
-const fs = require('fs');
-const Url = require('../Model/Url');
-const path = require("path");
+// @flow
+import {existsSync, mkdirSync} from 'fs';
+import Url from '../Model/Url';
+import {join} from "path";
 
 /**
  * Save the url html to file.
  */
-class HtmlRepository {
+export default class HtmlRepository {
+
+    /**
+     * Location to the html folder in the project.
+     */
+    projectFolder: string;
 
     /**
      * Build a json url repo.
-     * @param projectFolder {string}
      */
-    constructor(projectFolder) {
-        /**
-         * Location to the html folder in the project.
-         * @type {string}
-         */
+    constructor(projectFolder: string) {
         this.projectFolder = projectFolder;
     }
 
     /**
      * Gets the full path to the html file.
-     * @param url {Url}
-     * @returns {string}
      */
-    file(url) {
-        return path.join(this.getProjectsHtmlFolder(), url.name + '.html');
+    file(url: Url): string {
+        return join(this.getProjectsHtmlFolder(), url.name + '.html');
     }
 
     /**
      * Creates the html folder in the project if it doesn't exist.
-     * @returns {string} for the html folder.
      */
-    getProjectsHtmlFolder() {
-        let projectsPathHtml = path.join(this.projectFolder, 'html');
-        if (!fs.existsSync(projectsPathHtml)) {
-            fs.mkdirSync(projectsPathHtml);
+    getProjectsHtmlFolder(): string {
+        let projectsPathHtml = join(this.projectFolder, 'html');
+        if (!existsSync(projectsPathHtml)) {
+            mkdirSync(projectsPathHtml);
         }
         return projectsPathHtml;
     }
 }
-
-module.exports = HtmlRepository;
